@@ -10,7 +10,7 @@ export default class ClearButton extends React.Component <ButtonProps, {}> {
 
   render() {
     return <button
-      onClick={()=>{alert('clear!')}}
+      onClick={this.props.onClick}
       tabIndex={this.props.tabIndex}
       aria-label="Clear"
       className="p-2 rounded-lg"

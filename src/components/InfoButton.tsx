@@ -11,6 +11,7 @@ export default class InfoButton extends React.Component <ButtonProps, {}> {
 
   render() {
     return <GenericButton
+      onClick={this.props.onClick}
       tabIndex={this.props.tabIndex}
       >
       <picture>

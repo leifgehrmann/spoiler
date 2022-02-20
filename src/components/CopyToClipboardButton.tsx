@@ -9,6 +9,7 @@ export default class CopyToClipboardButton extends React.Component <ButtonProps,
 
   render() {
     return <GenericButton
+      onClick={this.props.onClick}
       tabIndex={this.props.tabIndex}
     >
       Copy to clipboard

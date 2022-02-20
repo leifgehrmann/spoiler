@@ -1,11 +1,58 @@
-import {useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 import InfoButton from "./components/InfoButton";
 import CopyToClipboardButton from "./components/CopyToClipboardButton";
 import ClearButton from "./components/ClearButton";
 import {disableTouchManipulationGestures, observeVisualViewport} from "./viewport";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const textInputRef = useRef(null)
+  const base64InputRef = useRef(null)
+  const focusOnInput = (inputRef: React.MutableRefObject<null>) => {
+    const inputElement = inputRef.current as HTMLTextAreaElement|null
+    if (inputElement !== null) {
+      inputElement.focus()
+    }
+  }
+
+  const [textMessage, setTextMessage] = useState('')
+  const [base64Message, setBase64Message] = useState('')
+  const updateTextMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    setTextMessage(e.target.value)
+    setBase64Message(btoa(e.target.value))
+  }
+  const updateBase64Message: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    setBase64Message(e.target.value)
+    setTextMessage(atob(e.target.value))
+  }
+  const clearBase64Message: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    setTextMessage('')
+    setBase64Message('')
+    focusOnInput(base64InputRef)
+  }
+  const clearTextMessage: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    setTextMessage('')
+    setBase64Message('')
+    focusOnInput(textInputRef)
+  }
+  const copyBase64MessageToClipboard: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    try {
+      window.navigator.clipboard.writeText(base64Message).then(() => {
+        alert('Copied message to clipboard')
+      }).catch(() => {
+        alert('Failed to copy message to clipboard')
+      });
+    } catch (e) {
+      alert('Failed to copy message to clipboard. HTTPS is required.')
+    }
+  }
+
+  function textMessageHasContent(): Boolean {
+    return textMessage.length > 0
+  }
+
+  function base64MessageHasContent(): Boolean {
+    return base64Message.length > 0
+  }
 
   let textInputCssHack  = {
     // For whatever reason, tailwindCSS's outline-0
@@ -44,6 +91,7 @@ function App() {
       <div className="absolute w-full h-full">
         <div className="relative h-full">
           <textarea
+            ref={base64InputRef}
             placeholder="Enter Base64"
             tabIndex={3}
             className="
@@ -53,15 +101,31 @@ function App() {
               font-mono
               placeholder-slate-400 dark:placeholder-slate-600"
             style={base64InputCssHack}
+            value={base64Message}
+            onChange={updateBase64Message}
           />
-          <div className="absolute right-0 m-2" style={clearBase64InputCssHack}>
-            <ClearButton tabIndex={4}/>
-          </div>
+          { base64MessageHasContent() &&
+            <div className="absolute right-0 m-2" style={clearBase64InputCssHack}>
+              <ClearButton
+                onClick={clearBase64Message}
+                tabIndex={4}
+              />
+            </div>
+          }
           <div className="absolute left-0 m-4" style={bottomButtonsCssHack}>
-            <InfoButton tabIndex={5}/>
+            <InfoButton
+              onClick={() => {alert('Encode and decode messages to share spoilers with friends!\n\n' +
+                'To share a message with spoilers, type a message in the top section, then copy the output in the bottom.\n\n' +
+                'To decode a spoiler, paste the encoded message in the bottom section and you\'ll see the secret message at the top.'
+              )}}
+              tabIndex={5}
+            />
           </div>
           <div className="absolute right-0 m-4" style={bottomButtonsCssHack}>
-            <CopyToClipboardButton tabIndex={6}/>
+            <CopyToClipboardButton
+              onClick={copyBase64MessageToClipboard}
+              tabIndex={6}
+            />
           </div>
         </div>
       </div>
@@ -73,6 +137,7 @@ function App() {
             border-b-2 border-dashed border-slate-300 dark:border-slate-700
           ">
           <textarea
+            ref={textInputRef}
             placeholder="Enter text"
             className="
             appearance-none bg-transparent text-lg resize-none align-bottom
@@ -82,10 +147,17 @@ function App() {
             "
             tabIndex={1}
             style={textInputCssHack}
+            value={textMessage}
+            onChange={updateTextMessage}
           />
-          <div className="absolute top-0 right-0 m-2">
-            <ClearButton tabIndex={2}/>
-          </div>
+          { textMessageHasContent() &&
+            <div className="absolute top-0 right-0 m-2">
+              <ClearButton
+                tabIndex={2}
+                onClick={clearTextMessage}
+              />
+            </div>
+          }
         </div>
       </div>
     </div>

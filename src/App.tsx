@@ -1,4 +1,5 @@
 import React, {useRef, useState} from 'react'
+import { encode, decode } from 'js-base64';
 import InfoButton from "./components/InfoButton";
 import CopyToClipboardButton from "./components/CopyToClipboardButton";
 import ClearButton from "./components/ClearButton";
@@ -18,11 +19,11 @@ function App() {
   const [base64Message, setBase64Message] = useState('')
   const updateTextMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setTextMessage(e.target.value)
-    setBase64Message(btoa(e.target.value))
+    setBase64Message(encode(e.target.value))
   }
   const updateBase64Message: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBase64Message(e.target.value)
-    setTextMessage(atob(e.target.value))
+    setTextMessage(decode(e.target.value))
   }
   const clearBase64Message: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     setTextMessage('')

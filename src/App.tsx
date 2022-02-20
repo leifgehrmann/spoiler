@@ -1,58 +1,49 @@
 import {useRef, useState} from 'react'
-import crossLight from './assets/cross-light.svg'
-import crossDark from './assets/cross-dark.svg'
-import infoLight from './assets/info-light.svg'
-import infoDark from './assets/info-dark.svg'
-import './App.css'
+import InfoButton from "./components/InfoButton";
+import CopyToClipboardButton from "./components/CopyToClipboardButton";
+import ClearButton from "./components/ClearButton";
+import {disableTouchManipulationGestures, observeVisualViewport} from "./viewport";
 
 function App() {
   const [count, setCount] = useState(0)
 
-  const base64Input = useRef(null)
-
-  function handleFocus(){
-    const base64InputElement = base64Input.current as HTMLTextAreaElement|null
-    if (base64InputElement !== null) {
-      let startTime = performance.now()
-
-      function keepAtTopOfPage() {
-        window.scrollTo(0, 0);
-        if ((performance.now()) - startTime > 1000) {
-          return
-        }
-        requestAnimationFrame(() => {
-          keepAtTopOfPage()
-        });
-      }
-
-      keepAtTopOfPage()
-    }
-  }
-
-  let webkitHack  = {
+  let textInputCssHack  = {
+    // For whatever reason, tailwindCSS's outline-0
+    // doesn't actually disable focus outlines.
     'outline': '0px'
   }
-  let webkitHack2  = {
+  let base64InputCssHack  = {
+    // For whatever reason, tailwindCSS's outline-0
+    // doesn't actually disable focus outlines.
     'outline': '0px',
-    'padding-top': 'calc(var(--app-height) / 2 + 1rem)'
+    // On iOS, focusing on inputs that are on the bottom half of the
+    // screen cause the browser to scroll awkwardly. We avoid this
+    // by positioning the text-area at the top of the page and by
+    // giving it a massive top-padding so that the actual content
+    // appears on the bottom half of the page. This surprisingly stops
+    // Safari from awkwardly jumping.
+    // The side-effects of this though are that the scroll-bar appears
+    // to work incorrectly... But that's not a significant problem
+    // compared the former visual glitch.
+    'paddingTop': 'calc(var(--app-height) / 2 + 1rem)',
+    // Make room for the buttons at the bottom of the page.
+    'paddingBottom': '4rem'
   }
-  let webkitHack3 = {
-    'margin-top': 'calc(var(--app-height) / 2 + 0.5rem)'
+  let clearBase64InputCssHack = {
+    'top': 'calc(var(--app-height) / 2)'
   }
-  let webkitHack4 = {
+  let textSectionCssHack = {
     'height': 'calc(var(--app-height) / 2)'
   }
-  let webkitHack5 = {
+  let bottomButtonsCssHack = {
     'top': 'calc(var(--app-height) - 4.5rem - env(safe-area-inset-bottom))'
   }
 
   return (
-    <div className="App mx-auto" id="appContainer">
+    <div className="App mx-auto" id="appContainer" style={{'height': 'var(--app-height)'}}>
       <div className="absolute w-full h-full">
         <div className="relative h-full">
           <textarea
-            ref={base64Input}
-            onFocus={handleFocus}
             placeholder="Enter Base64"
             tabIndex={3}
             className="
@@ -61,49 +52,26 @@ function App() {
               p-4 pr-12
               font-mono
               placeholder-slate-400 dark:placeholder-slate-600"
-            style={webkitHack2}
-          >
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-          </textarea>
-          <button
-            onClick={()=>{alert('hmmmmm'); base64Input?.focus()}}
-            aria-label="Close"
-            className="absolute right-0 m-2 p-2 rounded-lg"
-            tabIndex={4}
-            style={webkitHack3}>
-            <picture>
-              <source
-                srcSet={crossDark}
-                media="(prefers-color-scheme: dark)"/>
-              <img src={crossLight} alt="Clear"/>
-            </picture>
-          </button>
-          <button
-            onClick={()=>{alert('What is this?'); base64Input?.focus()}}
-            tabIndex={5}
-            className="absolute left-0 m-4 text-slate-600 backdrop-blur dark:text-slate-400 bg-slate-300/20 dark:bg-slate-700/20 p-2 px-4 rounded-lg" style={webkitHack5}>
-            <picture>
-              <source
-                srcSet={infoDark}
-                media="(prefers-color-scheme: dark)"/>
-                <img src={infoLight} alt="Close"/>
-            </picture>
-          </button>
-          <button
-            onClick={()=>{alert('sdfsd'); base64Input?.focus()}}
-            tabIndex={6}
-            className="absolute right-0 m-4 text-slate-600 backdrop-blur dark:text-slate-400 bg-slate-300/20 dark:bg-slate-700/20 p-2 px-4 rounded-lg font-semibold" style={webkitHack5}>Copy to clipboard</button>
+            style={base64InputCssHack}
+          />
+          <div className="absolute right-0 m-2" style={clearBase64InputCssHack}>
+            <ClearButton tabIndex={4}/>
+          </div>
+          <div className="absolute left-0 m-4" style={bottomButtonsCssHack}>
+            <InfoButton tabIndex={5}/>
+          </div>
+          <div className="absolute right-0 m-4" style={bottomButtonsCssHack}>
+            <CopyToClipboardButton tabIndex={6}/>
+          </div>
         </div>
       </div>
-      <div className="absolute top-0 w-full" style={webkitHack4}>
-        <div className="h-full relative bg-slate-50 dark:bg-slate-900 border-b-2 border-dashed border-slate-300 dark:border-slate-700">
+      <div className="absolute top-0 w-full" style={textSectionCssHack}>
+        <div
+          className="
+            relative h-full
+            bg-slate-50 dark:bg-slate-900
+            border-b-2 border-dashed border-slate-300 dark:border-slate-700
+          ">
           <textarea
             placeholder="Enter text"
             className="
@@ -113,30 +81,11 @@ function App() {
             placeholder-slate-400 dark:placeholder-slate-600
             "
             tabIndex={1}
-            style={webkitHack}
-          >
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-            sdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd
-          </textarea>
-          <button
-            onClick={()=>{alert('focus on text');}}
-            aria-label="Close"
-            className="absolute top-0 right-0 m-2 p-2 rounded-lg"
-            tabIndex={2}
-          >
-            <picture>
-              <source
-                srcSet={crossDark}
-                media="(prefers-color-scheme: dark)"/>
-              <img src={crossLight} alt="Clear"/>
-            </picture>
-          </button>
+            style={textInputCssHack}
+          />
+          <div className="absolute top-0 right-0 m-2">
+            <ClearButton tabIndex={2}/>
+          </div>
         </div>
       </div>
     </div>
@@ -144,50 +93,11 @@ function App() {
 }
 
 // Prevent pinch gestures
-document.addEventListener('gesturestart', (e) => {
-  e.preventDefault();
-});
-
-document.addEventListener('gesturechange', (e) => {
-  e.preventDefault();
-});
-
-document.addEventListener('gestureend', (e) => {
-  e.preventDefault();
-});
-
-document.addEventListener('scroll', (e) => {
-  e.preventDefault();
-  window.scrollTo(0, 0);
-});
-
-// Add listeners
-visualViewport.addEventListener('scroll', update);
-visualViewport.addEventListener('resize', update);
-addEventListener('scroll', update);
-
-let pendingUpdate = false;
-
-function update() {
-  // If we're already going to handle an update, return
-  if (pendingUpdate) return;
-
-  pendingUpdate = true;
-
-  // Use requestAnimationFrame so the update happens before next render
-  requestAnimationFrame(() => {
-    pendingUpdate = false;
-
-    // Handle update here
-    const appContainer = document.getElementById('appContainer')
-    if (appContainer !== null) {
-      appContainer.style.height = window.visualViewport.height + 'px'
-      let root = document.documentElement;
-      root.style.setProperty('--app-height', appContainer.style.height);
-    }
-  });
-}
-
-update()
+disableTouchManipulationGestures()
+// Update the app-height when the viewport changes (including when the keyboard is displayed!)
+observeVisualViewport(() => {
+  let root = document.documentElement;
+  root.style.setProperty('--app-height', window.visualViewport.height + 'px');
+})
 
 export default App

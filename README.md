@@ -6,7 +6,9 @@ Visit https://spoiler.leifgehrmann.com/ to see it live.
 
 ## Demo
 
-![A short demo demonstrating decoding a message, then encoding a different message.](https://user-images.githubusercontent.com/3501061/154960198-19ade20a-9875-4f91-b429-3bae72d6626f.mp4)
+A short demonstration of decoding a message, then encoding a different message.
+
+https://user-images.githubusercontent.com/3501061/154963211-18b8ac3d-4373-4bc1-aa5d-ee4f9a83bc61.mp4
 
 ## Why?
 

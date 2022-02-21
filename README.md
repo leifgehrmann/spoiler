@@ -1,12 +1,25 @@
 # spoiler
 
-A simple app for sharing Base64 encoded spoilers.
+A simple app for sharing [Base64](https://en.wikipedia.org/wiki/Base64) encoded spoilers.
 
 Visit https://spoiler.leifgehrmann.com/ to see it live.
 
 ## Demo
 
-![A short demo demonstrating decoding a message, then encoding a different message.](https://user-images.githubusercontent.com/3501061/154933551-88cab4cf-9e2f-4a54-b820-fd878eb02446.mov)
+![A short demo demonstrating decoding a message, then encoding a different message.](https://user-images.githubusercontent.com/3501061/154960198-19ade20a-9875-4f91-b429-3bae72d6626f.mp4)
+
+## Why?
+
+In a messaging thread I'm in we've been using Base64 to share spoilers to a puzzle game. We chose Base64 because it's more cryptic than [ROT13](https://en.wikipedia.org/wiki/ROT13), and less complex than a sophisticated [Caesar cipher](https://en.wikipedia.org/wiki/Caesar_cipher).
+
+There are already a number of online apps that encode/decode Base64 text, but pretty much all of them are frustrating to use for a few reasons:
+
+* They are not mobile friendly
+* They are plastered with ads
+* They have site trackers and Google Analytics plugins installed
+* They do server-side processing of the base64 data, when it could easily be done on the frontend
+
+This spoiler app solves all of those problems by being designed for mobile, having no ads, no trackers, and absolutely no personal data is shared server-side since it's a static web-application that performs 0 ajax calls.
 
 ## Development
 

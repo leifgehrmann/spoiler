@@ -8,6 +8,7 @@ import {disableTouchManipulationGestures, observeVisualViewport} from "./viewpor
 function App() {
   const textInputRef = useRef(null)
   const base64InputRef = useRef(null)
+
   const focusOnInput = (inputRef: React.MutableRefObject<null>) => {
     const inputElement = inputRef.current as HTMLTextAreaElement|null
     if (inputElement !== null) {

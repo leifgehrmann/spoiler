@@ -24,7 +24,11 @@ function App() {
   }
   const updateBase64Message: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBase64Message(e.target.value)
-    setTextMessage(decode(e.target.value))
+    // If there are whitespaces between each token, we assume that
+    // they are different Base64 strings rather than joining them
+    // together, which unfortunately js-base64 does.
+    const decodedMessage = e.target.value.split(/\s/).map(decode).join(' ')
+    setTextMessage(decodedMessage)
   }
   const clearBase64Message: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     setTextMessage('')

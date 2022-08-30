@@ -184,9 +184,9 @@ function App() {
 // Prevent pinch gestures
 disableTouchManipulationGestures()
 // Update the app-height when the viewport changes (including when the keyboard is displayed!)
-observeVisualViewport(() => {
+observeVisualViewport((visualViewport) => {
   let root = document.documentElement;
-  root.style.setProperty('--app-height', window.visualViewport.height + 'px');
+  root.style.setProperty('--app-height', visualViewport.height + 'px');
 })
 
 export default App

@@ -20,6 +20,10 @@ export function disableTouchManipulationGestures() {
 export function observeVisualViewport(callback: (visualViewport: VisualViewport) => unknown) {
   let pendingUpdate = false;
 
+  if (window.visualViewport === null) {
+    return
+  }
+
   function update() {
     // If we're already going to handle an update, return
     if (pendingUpdate) return;
@@ -29,6 +33,10 @@ export function observeVisualViewport(callback: (visualViewport: VisualViewport)
     // Use requestAnimationFrame so the update happens before next render
     requestAnimationFrame(() => {
       pendingUpdate = false;
+
+      if (window.visualViewport === null) {
+        return
+      }
 
       // Handle update here
       callback(window.visualViewport)
@@ -42,8 +50,8 @@ export function observeVisualViewport(callback: (visualViewport: VisualViewport)
     });
   }
 
-  visualViewport.addEventListener('scroll', update);
-  visualViewport.addEventListener('resize', update);
+  window.visualViewport.addEventListener('scroll', update);
+  window.visualViewport.addEventListener('resize', update);
   addEventListener('scroll', update);
 
   // Trigger an update the first time the event listeners are added

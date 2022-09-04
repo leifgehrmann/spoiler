@@ -21,7 +21,7 @@ export function observeVisualViewport(callback: (visualViewport: VisualViewport)
   let pendingUpdate = false;
 
   if (window.visualViewport === null) {
-    return
+    return;
   }
 
   function update() {
@@ -35,16 +35,16 @@ export function observeVisualViewport(callback: (visualViewport: VisualViewport)
       pendingUpdate = false;
 
       if (window.visualViewport === null) {
-        return
+        return;
       }
 
       // Handle update here
-      callback(window.visualViewport)
-      const appContainer = document.getElementById('appContainer')
+      callback(window.visualViewport);
+      const appContainer = document.getElementById('appContainer');
       if (appContainer !== null) {
-        callback(window.visualViewport)
-        appContainer.style.height = window.visualViewport.height + 'px'
-        let root = document.documentElement;
+        callback(window.visualViewport);
+        appContainer.style.height = `${window.visualViewport.height}px`;
+        const root = document.documentElement;
         root.style.setProperty('--app-height', appContainer.style.height);
       }
     });
@@ -52,7 +52,7 @@ export function observeVisualViewport(callback: (visualViewport: VisualViewport)
 
   window.visualViewport.addEventListener('scroll', update);
   window.visualViewport.addEventListener('resize', update);
-  addEventListener('scroll', update);
+  window.addEventListener('scroll', update);
 
   // Trigger an update the first time the event listeners are added
   update();

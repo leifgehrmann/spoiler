@@ -1,7 +1,7 @@
 {
   "include": [
     ".eslintrc.js",
-    "vite.config.ts",
+    "vite.config.mts",
     "tailwind.config.js",
     "postcss.config.js"
   ]
